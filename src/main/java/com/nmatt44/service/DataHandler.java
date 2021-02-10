@@ -8,8 +8,7 @@ import java.net.URLEncoder;
 
 public class DataHandler {
 
-    public static void getDataFromAPI() {
-        String apiUrl = "https://my.api.mockaroo.com/listing?key=63304c70";
+    public static void getDataFromAPI(String apiUrl) {
         HttpResponse<String> response = Unirest.get(apiUrl).asString();
         String stringifiedResponse = response.getBody();
 
