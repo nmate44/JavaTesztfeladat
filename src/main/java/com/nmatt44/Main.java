@@ -12,37 +12,31 @@ import java.util.Properties;
 
 public class Main {
 
-    // API URLs (set in config)
-    private static String apiListing;
-    private static String apiLocation;
-    private static String apiListingStatus;
-    private static String apiMarketplace;
+    private static String apiListingUrl;
+    private static String apiLocationUrl;
+    private static String apiListingStatusUrl;
+    private static String apiMarketplaceUrl;
 
     public static void main(String[] args) {
 
-	    // Initialization w/ config file
+        DataHandler dataHandler = new DataHandler();
+
         try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
-
             System.out.println("Properties file found, start configuration.");
-
-            // Set Properties
             Properties config = new Properties();
             config.load(inputFile);
 
-            // Set API data
-            apiListing = config.getProperty("apiListing");
-            apiLocation = config.getProperty("apiLocation");
-            apiListingStatus = config.getProperty("apiListingStatus");
-            apiMarketplace = config.getProperty("apiMarketplace");
+            apiListingUrl = config.getProperty("apiListingUrl");
+            apiLocationUrl = config.getProperty("apiLocationUrl");
+            apiListingStatusUrl = config.getProperty("apiListingStatusUrl");
+            apiMarketplaceUrl = config.getProperty("apiMarketplaceUrl");
             System.out.println("API data set.");
 
-            // Set DB URL according to parameters
             String connectionUrl = config.getProperty("dbUrl")
                     + "?user=" + config.getProperty("dbUser")
                     + "&password=" + config.getProperty("dbPassword");
             System.out.println("DB URL set: " + connectionUrl);
 
-            // Connect to DB
             try (Connection dbConnection = DriverManager.getConnection(connectionUrl)) {
                 System.out.println("Connected to DB.");
             } catch(SQLException exception) {
@@ -52,12 +46,11 @@ public class Main {
         } catch(IOException exception) {
             System.out.println("IO exception thrown: " + exception);
         }
-        // End of initialization
 
-        // Data sync from API
-        DataHandler.syncMarketplaceData(apiMarketplace);
-        DataHandler.syncLocationData(apiLocation);
-        // End of data sync
+        dataHandler.syncMarketplaceData(apiMarketplaceUrl);
+        dataHandler.syncLocationData(apiLocationUrl);
+        dataHandler.syncListingStatusData(apiListingStatusUrl);
 
     }
+
 }

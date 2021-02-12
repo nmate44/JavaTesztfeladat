@@ -1,5 +1,7 @@
 package com.nmatt44.models;
 
+import kong.unirest.json.JSONObject;
+
 public class Marketplace {
 
     private int id;
@@ -11,9 +13,9 @@ public class Marketplace {
         this.marketplaceName = marketplaceName;
     }
 
-    // Getters and Setters
-    public int getId() {
-        return id;
+    public Marketplace(JSONObject marketplaceObject) {
+        this.id = marketplaceObject.getInt("id");
+        this.marketplaceName = marketplaceObject.getString("marketplace_name");
     }
 
     public String getMarketplaceName() {

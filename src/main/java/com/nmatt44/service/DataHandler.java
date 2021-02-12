@@ -1,5 +1,6 @@
 package com.nmatt44.service;
 
+import com.nmatt44.models.ListingStatus;
 import com.nmatt44.models.Location;
 import com.nmatt44.models.Marketplace;
 
@@ -10,41 +11,57 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class DataHandler {
 
     private static ArrayList<Marketplace> marketplaces;
     private static ArrayList<Location> locations;
+    private static ArrayList<ListingStatus> listingStatuses;
 
-    public static void syncMarketplaceData(String apiUrl) {
-        HttpResponse<JsonNode> response = Unirest.get(apiUrl).asJson();
+    public void syncMarketplaceData(String apiUrl) {
+        HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
+        JSONArray marketplaceArray = apiResponse.getBody().getArray();
+        generateListOfMarketplaces(marketplaceArray);
+    }
 
-        JSONArray marketplaceArray = response.getBody().getArray();
+    private void generateListOfMarketplaces(JSONArray marketplaceArray) {
         marketplaces = new ArrayList<>();
-
         for(int i = 0; i < marketplaceArray.length(); i++) {
             JSONObject marketplaceObject = marketplaceArray.getJSONObject(i);
-            marketplaces.add( new Marketplace(
-              marketplaceObject.getInt("id"),
-              marketplaceObject.getString("marketplace_name")
-            ));
+            marketplaces.add(new Marketplace(marketplaceObject));
             System.out.println("Marketplace added: " + marketplaces.get(i).getMarketplaceName());
         }
     }
 
-    public static void syncLocationData(String apiUrl) {
-        HttpResponse<JsonNode> response = Unirest.get(apiUrl).asJson();
+    public void syncLocationData(String apiUrl) {
+        HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
+        JSONArray locationArray = apiResponse.getBody().getArray();
+        generateListOfLocations(locationArray);
+    }
 
-        JSONArray locationArray = response.getBody().getArray();
+    private void generateListOfLocations(JSONArray locationArray) {
         locations = new ArrayList<>();
-
         for(int i = 0; i < locationArray.length(); i++) {
             JSONObject locationObject = locationArray.getJSONObject(i);
-            locations.add( new Location(locationObject));
+            locations.add(new Location(locationObject));
             System.out.println("Location added: " + locations.get(i).getId()
                     + "; Country: " + locations.get(i).getCountry()
                     + "; Town: " + locations.get(i).getTown());
+        }
+    }
+
+    public void syncListingStatusData(String apiUrl) {
+        HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
+        JSONArray listingStatusArray = apiResponse.getBody().getArray();
+        generateListOfListingStatuses(listingStatusArray);
+    }
+
+    private void generateListOfListingStatuses(JSONArray listingStatusArray) {
+        listingStatuses = new ArrayList<>();
+        for(int i = 0; i < listingStatusArray.length(); i++) {
+            JSONObject listingStatusObject = listingStatusArray.getJSONObject(i);
+            listingStatuses.add(new ListingStatus(listingStatusObject));
+            System.out.println("Listing status added: " + listingStatuses.get(i).getStatusName());
         }
     }
 
