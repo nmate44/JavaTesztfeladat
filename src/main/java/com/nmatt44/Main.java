@@ -1,5 +1,7 @@
 package com.nmatt44;
 
+import com.nmatt44.service.DataHandler;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-	    // Initialization: Load apiConfig (and catch errors)
+	    // Initialization
         try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
 
             System.out.println("Properties file found, start configuration.");
@@ -34,12 +36,13 @@ public class Main {
             apiMarketplace = config.getProperty("apiMarketplace");
             System.out.println("API data set.");
 
-            // Connect to DB
+            // Set DB URL according to parameters
             String connectionUrl = config.getProperty("dbUrl")
                     + "?user=" + config.getProperty("dbUser")
                     + "&password=" + config.getProperty("dbPassword");
-            System.out.println("Db URL set: " + connectionUrl);
+            System.out.println("DB URL set: " + connectionUrl);
 
+            // Connect to DB
             try (Connection dbConnection = DriverManager.getConnection(connectionUrl)) {
                 System.out.println("Connected to DB.");
             } catch(SQLException exception) {
@@ -49,9 +52,10 @@ public class Main {
         } catch(IOException exception) {
             System.out.println("IO exception thrown: " + exception);
         }
+        // End of initialization
 
         // Get data from API (testing out routes)
-	    //DataHandler.getDataFromAPI(apiListing);
+	    DataHandler.getDataFromAPI(apiListing);
         //DataHandler.getDataFromAPI(apiLocation);
         //DataHandler.getDataFromAPI(apiListingStatus);
         //DataHandler.getDataFromAPI(apiMarketplace);
