@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class Main {
 
-    // API URLs (set in apiConfig)
+    // API URLs (set in config)
     private static String apiListing;
     private static String apiLocation;
     private static String apiListingStatus;
@@ -20,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-	    // Initialization
+	    // Initialization w/ config file
         try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
 
             System.out.println("Properties file found, start configuration.");
@@ -54,11 +54,10 @@ public class Main {
         }
         // End of initialization
 
-        // Get data from API (testing out routes)
-	    DataHandler.getDataFromAPI(apiListing);
-        //DataHandler.getDataFromAPI(apiLocation);
-        //DataHandler.getDataFromAPI(apiListingStatus);
-        //DataHandler.getDataFromAPI(apiMarketplace);
+        // Data sync from API
+        DataHandler.syncMarketplaceData(apiMarketplace);
+        DataHandler.syncLocationData(apiLocation);
+        // End of data sync
 
     }
 }
