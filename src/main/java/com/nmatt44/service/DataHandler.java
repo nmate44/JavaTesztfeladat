@@ -39,22 +39,13 @@ public class DataHandler {
         JSONArray locationArray = response.getBody().getArray();
         locations = new ArrayList<>();
 
-        /*
         for(int i = 0; i < locationArray.length(); i++) {
             JSONObject locationObject = locationArray.getJSONObject(i);
-            locations.add( new Location(
-                    UUID.fromString(locationObject.getString("id")),
-                    locationObject.getString("manager_name"),
-                    locationObject.getString("phone"),
-                    locationObject.getString("address_primary"),
-                    locationObject.getString("address_secondary"),
-                    locationObject.getString("country"),
-                    locationObject.getString("town"),
-                    locationObject.getString("postal_code")
-            ));
-            System.out.println("Location added: " + locations.get(i).getId());
+            locations.add( new Location(locationObject));
+            System.out.println("Location added: " + locations.get(i).getId()
+                    + "; Country: " + locations.get(i).getCountry()
+                    + "; Town: " + locations.get(i).getTown());
         }
-        */
     }
 
 }
