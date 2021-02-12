@@ -16,16 +16,8 @@ public class Marketplace {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getMarketplaceName() {
         return marketplaceName;
-    }
-
-    public void setMarketplaceName(String marketplace_name) {
-        this.marketplaceName = marketplace_name;
     }
 
 }
