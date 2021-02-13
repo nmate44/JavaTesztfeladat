@@ -50,6 +50,7 @@ public class Main {
         dataHandler.syncMarketplaceData(apiMarketplaceUrl);
         dataHandler.syncLocationData(apiLocationUrl);
         dataHandler.syncListingStatusData(apiListingStatusUrl);
+        dataHandler.syncListingData(apiListingUrl);
 
     }
 

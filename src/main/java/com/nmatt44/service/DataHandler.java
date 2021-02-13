@@ -1,5 +1,6 @@
 package com.nmatt44.service;
 
+import com.nmatt44.models.Listing;
 import com.nmatt44.models.ListingStatus;
 import com.nmatt44.models.Location;
 import com.nmatt44.models.Marketplace;
@@ -17,6 +18,7 @@ public class DataHandler {
     private static ArrayList<Marketplace> marketplaces;
     private static ArrayList<Location> locations;
     private static ArrayList<ListingStatus> listingStatuses;
+    private static ArrayList<Listing> listings;
 
     public void syncMarketplaceData(String apiUrl) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
@@ -62,6 +64,21 @@ public class DataHandler {
             JSONObject listingStatusObject = listingStatusArray.getJSONObject(i);
             listingStatuses.add(new ListingStatus(listingStatusObject));
             System.out.println("Listing status added: " + listingStatuses.get(i).getStatusName());
+        }
+    }
+
+    public void syncListingData(String apiUrl) {
+        HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
+        JSONArray listingArray = apiResponse.getBody().getArray();
+        generateListOfListings(listingArray);
+    }
+
+    private void generateListOfListings(JSONArray listingArray) {
+        listings = new ArrayList<>();
+        for(int i = 0; i < listingArray.length(); i++) {
+            JSONObject listingObject = listingArray.getJSONObject(i);
+            listings.add(new Listing(listingObject));
+            System.out.println("Listing added: " + listings.get(i).getTitle());
         }
     }
 
