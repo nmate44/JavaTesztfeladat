@@ -78,7 +78,10 @@ public class DataHandler {
         for(int i = 0; i < listingArray.length(); i++) {
             JSONObject listingObject = listingArray.getJSONObject(i);
             listings.add(new Listing(listingObject));
-            System.out.println("Listing added: " + listings.get(i).getTitle());
+            System.out.println(
+                    "Listing added: " + listings.get(i).getTitle()
+                    + "; upload_time: " + listings.get(i).getUploadTime()
+            );
         }
     }
 

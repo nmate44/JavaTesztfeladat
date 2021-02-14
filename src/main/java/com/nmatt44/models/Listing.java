@@ -1,53 +1,47 @@
 package com.nmatt44.models;
 
+import com.nmatt44.service.JsonHandler;
 import kong.unirest.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 public class Listing {
 
-    private UUID id;
+    private String id;
     private String title;
     private String description;
-    private UUID inventoryItemLocationId;
+    private String inventoryItemLocationId;
     private double listingPrice;
     private String currency;
     private int quantity;
     private int listingStatus;
     private int marketplace;
-    private Date uploadTime;
+    private String uploadTime;
     private String ownerEmailAddress;
 
-    public Listing(JSONObject listingObject) {
-        this.id = UUID.fromString(listingObject.getString("id"));
-        this.title = listingObject.getString("title");
-        this.description = listingObject.getString("description");
-        this.inventoryItemLocationId = UUID.fromString(listingObject.getString("location_id"));
-        this.listingPrice = listingObject.getDouble("listing_price");
-        this.currency = listingObject.getString("currency");
-        this.quantity = listingObject.getInt("quantity");
-        this.listingStatus = listingObject.getInt("listing_status");
-        this.marketplace = listingObject.getInt("marketplace");
-        this.uploadTime = generateDateFromString(listingObject.getString("upload_time"));
-        this.ownerEmailAddress = listingObject.getString("owner_email_address");
-    }
+    JsonHandler jsonHandler = new JsonHandler();
 
-    private Date generateDateFromString(String stringDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        Date parsedDate;
-        try {
-            parsedDate = dateFormat.parse(stringDate);
-        } catch(ParseException exception) {
-            System.out.println("ParseException thrown at Date gen: " + exception);
-            parsedDate = null;
-        }
-        return parsedDate;
+    public Listing(JSONObject listingObject) {
+        this.id = jsonHandler.getStringFromJSON(listingObject, "id");
+        this.title = jsonHandler.getStringFromJSON(listingObject, "title");
+        this.description = jsonHandler.getStringFromJSON(listingObject, "description");
+        this.inventoryItemLocationId = jsonHandler.getStringFromJSON(listingObject, "location_id");
+        this.listingPrice = jsonHandler.getDoubleFromJSON(listingObject, "listing_price");
+        this.currency = jsonHandler.getStringFromJSON(listingObject, "currency");
+        this.quantity = jsonHandler.getIntFromJSON(listingObject, "quantity");
+        this.listingStatus = jsonHandler.getIntFromJSON(listingObject, "listing_status");
+        this.marketplace = jsonHandler.getIntFromJSON(listingObject, "marketplace");
+        this.uploadTime = jsonHandler.getStringFromJSON(listingObject, "upload_time");
+        this.ownerEmailAddress = jsonHandler.getStringFromJSON(listingObject, "owner_email_address");
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getUploadTime() {
+        return uploadTime;
     }
 }
