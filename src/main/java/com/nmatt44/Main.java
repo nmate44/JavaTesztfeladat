@@ -1,6 +1,7 @@
 package com.nmatt44;
 
 import com.nmatt44.service.DataHandler;
+import com.nmatt44.service.QueryTool;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,10 +21,11 @@ public class Main {
     public static void main(String[] args) {
 
         DataHandler dataHandler = new DataHandler();
+        Properties config = new Properties();
+        Connection dbConnection = null;
 
         try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
             System.out.println("Properties file found, start configuration.");
-            Properties config = new Properties();
             config.load(inputFile);
 
             apiListingUrl = config.getProperty("apiListingUrl");
@@ -32,14 +34,10 @@ public class Main {
             apiMarketplaceUrl = config.getProperty("apiMarketplaceUrl");
             System.out.println("API data set.");
 
-            String connectionUrl = config.getProperty("dbUrl")
-                    + "?user=" + config.getProperty("dbUser")
-                    + "&password=" + config.getProperty("dbPassword");
-            System.out.println("DB URL set: " + connectionUrl);
-
-            try (Connection dbConnection = DriverManager.getConnection(connectionUrl)) {
-                System.out.println("Connected to DB.");
-            } catch(SQLException exception) {
+            try {
+                dbConnection = connectToDatabase(config);
+                System.out.println("Connected to Database.");
+            } catch (SQLException exception) {
                 System.out.println("SQL exception thrown: " + exception);
             }
 
@@ -50,8 +48,18 @@ public class Main {
         dataHandler.syncMarketplaceData(apiMarketplaceUrl);
         dataHandler.syncLocationData(apiLocationUrl);
         dataHandler.syncListingStatusData(apiListingStatusUrl);
-        dataHandler.syncListingData(apiListingUrl);
+        //dataHandler.syncListingData(apiListingUrl);
 
+        dataHandler.uploadListingStatusesToDb(dbConnection);
+
+    }
+
+    private static Connection connectToDatabase(Properties config) throws SQLException {
+        String connectionUrl = config.getProperty("dbUrl")
+                + "?user=" + config.getProperty("dbUser")
+                + "&password=" + config.getProperty("dbPassword");
+        System.out.println("Database URL set.");
+        return DriverManager.getConnection(connectionUrl);
     }
 
 }

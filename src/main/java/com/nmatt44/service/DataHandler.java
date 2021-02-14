@@ -11,6 +11,7 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class DataHandler {
@@ -19,6 +20,7 @@ public class DataHandler {
     private static ArrayList<Location> locations;
     private static ArrayList<ListingStatus> listingStatuses;
     private static ArrayList<Listing> listings;
+    private QueryTool queryTool = new QueryTool();
 
     public void syncMarketplaceData(String apiUrl) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
@@ -82,6 +84,12 @@ public class DataHandler {
                     "Listing added: " + listings.get(i).getTitle()
                     + "; upload_time: " + listings.get(i).getUploadTime()
             );
+        }
+    }
+
+    public void uploadListingStatusesToDb(Connection dbConnection) {
+        for(int i = 0; i < listingStatuses.size(); i++) {
+            queryTool.insertListingStatus(listingStatuses.get(i), dbConnection);
         }
     }
 
