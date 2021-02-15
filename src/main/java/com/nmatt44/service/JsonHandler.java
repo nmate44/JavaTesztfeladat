@@ -2,6 +2,8 @@ package com.nmatt44.service;
 
 import kong.unirest.json.JSONObject;
 
+import java.util.UUID;
+
 public class JsonHandler {
 
     public String getStringFromJSON(JSONObject jsonObject, String jsonKey) {
@@ -34,6 +36,11 @@ public class JsonHandler {
         else {
             result = jsonObject.getDouble(jsonKey);
         }
+        return result;
+    }
+
+    public UUID getUUIDFromJSON(JSONObject jsonObject, String jsonKey) {
+        UUID result = UUID.fromString(jsonObject.getString(jsonKey));
         return result;
     }
 

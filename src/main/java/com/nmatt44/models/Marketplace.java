@@ -12,6 +12,10 @@ public class Marketplace {
         this.marketplaceName = marketplaceObject.getString("marketplace_name");
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getMarketplaceName() {
         return marketplaceName;
     }

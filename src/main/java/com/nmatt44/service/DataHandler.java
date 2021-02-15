@@ -12,6 +12,7 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DataHandler {
@@ -89,7 +90,31 @@ public class DataHandler {
 
     public void uploadListingStatusesToDb(Connection dbConnection) {
         for(int i = 0; i < listingStatuses.size(); i++) {
-            queryTool.insertListingStatus(listingStatuses.get(i), dbConnection);
+            try {
+                queryTool.insertListingStatus(listingStatuses.get(i), dbConnection);
+            } catch (SQLException exception) {
+            System.out.println("SQLException thrown: " + exception);
+            }
+        }
+    }
+
+    public void uploadMarketplacesToDb(Connection dbConnection) {
+        for(int i = 0; i < marketplaces.size(); i++) {
+            try {
+                queryTool.insertMarketplace(marketplaces.get(i), dbConnection);
+            } catch (SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
+        }
+    }
+
+    public void uploadLocationsToDb(Connection dbConnection) {
+        for(int i = 0; i < locations.size(); i++) {
+            try {
+                queryTool.insertLocation(locations.get(i), dbConnection);
+            } catch(SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
         }
     }
 

@@ -46,11 +46,15 @@ public class Main {
         }
 
         dataHandler.syncMarketplaceData(apiMarketplaceUrl);
-        dataHandler.syncLocationData(apiLocationUrl);
-        dataHandler.syncListingStatusData(apiListingStatusUrl);
-        //dataHandler.syncListingData(apiListingUrl);
+        dataHandler.uploadMarketplacesToDb(dbConnection);
 
+        dataHandler.syncListingStatusData(apiListingStatusUrl);
         dataHandler.uploadListingStatusesToDb(dbConnection);
+
+        dataHandler.syncLocationData(apiLocationUrl);
+        dataHandler.uploadLocationsToDb(dbConnection);
+
+        //dataHandler.syncListingData(apiListingUrl);
 
     }
 
