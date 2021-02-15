@@ -52,12 +52,19 @@ public class QueryTool {
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
         statement.setInt(1, marketplaceId);
         ResultSet resultSet = statement.executeQuery();
-        /*
+        return resultSet;
+    }
+
+    public String selectMarketplaceNameById(int marketplaceId, Connection dbConnection) throws SQLException {
+        String marketplaceName = null;
+        String SQLQuery = "SELECT * FROM public.marketplace WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        statement.setInt(1, marketplaceId);
+        ResultSet resultSet = statement.executeQuery();
         if(resultSet.next()) {
             marketplaceName = resultSet.getString("marketplace_name");
         }
-        */
-        return resultSet;
+        return marketplaceName;
     }
 
     public ResultSet selectLocationById(UUID locationId, Connection dbConnection) throws SQLException {
