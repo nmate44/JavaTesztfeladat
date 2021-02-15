@@ -3,12 +3,14 @@ package com.nmatt44.models;
 import com.nmatt44.service.JsonHandler;
 import kong.unirest.json.JSONObject;
 
+import java.util.UUID;
+
 public class Listing {
 
-    private String id;
+    private UUID id;
     private String title;
     private String description;
-    private String inventoryItemLocationId;
+    private UUID inventoryItemLocationId;
     private double listingPrice;
     private String currency;
     private int quantity;
@@ -20,10 +22,20 @@ public class Listing {
     JsonHandler jsonHandler = new JsonHandler();
 
     public Listing(JSONObject listingObject) {
-        this.id = jsonHandler.getStringFromJSON(listingObject, "id");
+        try {
+            this.id = jsonHandler.getUUIDFromJSON(listingObject, "id");
+        } catch (IllegalArgumentException exception) {
+            this.id = null;
+            System.out.println("Invalid UUID material, set to null.");
+        }
         this.title = jsonHandler.getStringFromJSON(listingObject, "title");
         this.description = jsonHandler.getStringFromJSON(listingObject, "description");
-        this.inventoryItemLocationId = jsonHandler.getStringFromJSON(listingObject, "location_id");
+        try {
+            this.inventoryItemLocationId = jsonHandler.getUUIDFromJSON(listingObject, "location_id");
+        } catch (IllegalArgumentException exception) {
+            this.inventoryItemLocationId = null;
+            System.out.println("Invalid UUID material, set to null.");
+        }
         this.listingPrice = jsonHandler.getDoubleFromJSON(listingObject, "listing_price");
         this.currency = jsonHandler.getStringFromJSON(listingObject, "currency");
         this.quantity = jsonHandler.getIntFromJSON(listingObject, "quantity");
@@ -33,11 +45,47 @@ public class Listing {
         this.ownerEmailAddress = jsonHandler.getStringFromJSON(listingObject, "owner_email_address");
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public UUID getInventoryItemLocationId() {
+        return inventoryItemLocationId;
+    }
+
+    public double getListingPrice() {
+        return listingPrice;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public int getListingStatus() {
+        return listingStatus;
+    }
+
+    public int getMarketplace() {
+        return marketplace;
+    }
+
     public String getUploadTime() {
         return uploadTime;
+    }
+
+    public String getOwnerEmailAddress() {
+        return ownerEmailAddress;
     }
 }

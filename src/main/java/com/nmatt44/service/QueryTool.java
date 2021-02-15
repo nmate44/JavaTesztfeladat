@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class QueryTool {
 
@@ -46,16 +47,33 @@ public class QueryTool {
         System.out.println("Marketplace inserted to DB.");
     }
 
-    public String selectMarketplaceName(int marketplaceId, Connection dbConnection) throws SQLException {
-        String marketplaceName = null;
-        String SQLQuery = "SELECT marketplace_name FROM public.marketplace WHERE id=?";
+    public ResultSet selectMarketplaceById(int marketplaceId, Connection dbConnection) throws SQLException {
+        String SQLQuery = "SELECT * FROM public.marketplace WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
         statement.setInt(1, marketplaceId);
         ResultSet resultSet = statement.executeQuery();
+        /*
         if(resultSet.next()) {
             marketplaceName = resultSet.getString("marketplace_name");
         }
-        return marketplaceName;
+        */
+        return resultSet;
+    }
+
+    public ResultSet selectLocationById(UUID locationId, Connection dbConnection) throws SQLException {
+        String SQLQuery = "SELECT * FROM public.location WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        statement.setObject(1, locationId);
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet;
+    }
+
+    public ResultSet selectListingStatusById(int listingStatusId, Connection dbConnection) throws SQLException {
+        String SQLQuery = "SELECT * FROM public.listing_status WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        statement.setObject(1, listingStatusId);
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet;
     }
 
 }

@@ -21,7 +21,9 @@ public class DataHandler {
     private static ArrayList<Location> locations;
     private static ArrayList<ListingStatus> listingStatuses;
     private static ArrayList<Listing> listings;
+    private static ArrayList<Listing> validatedListings;
     private QueryTool queryTool = new QueryTool();
+    private DataValidator dataValidator = new DataValidator();
 
     public void syncMarketplaceData(String apiUrl) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
@@ -70,10 +72,11 @@ public class DataHandler {
         }
     }
 
-    public void syncListingData(String apiUrl) {
+    public void syncListingData(String apiUrl, Connection dbConnection) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
         JSONArray listingArray = apiResponse.getBody().getArray();
         generateListOfListings(listingArray);
+        validatedListings = dataValidator.validateListings(listings, dbConnection);
     }
 
     private void generateListOfListings(JSONArray listingArray) {
