@@ -1,5 +1,6 @@
 package com.nmatt44.models;
 
+import com.nmatt44.service.JsonHandler;
 import kong.unirest.json.JSONObject;
 
 public class ListingStatus {
@@ -7,14 +8,11 @@ public class ListingStatus {
     private int id;
     private String statusName;
 
-    public ListingStatus(int id, String statusName) {
-        this.id = id;
-        this.statusName = statusName;
-    }
+    JsonHandler jsonHandler = new JsonHandler();
 
     public ListingStatus(JSONObject listingStatusObject) {
-        this.id = listingStatusObject.getInt("id");
-        this.statusName = listingStatusObject.getString("status_name");
+        this.id = jsonHandler.getIntFromJSON(listingStatusObject, "id");
+        this.statusName = jsonHandler.getStringFromJSON(listingStatusObject, "status_name");
     }
 
     public int getId() {

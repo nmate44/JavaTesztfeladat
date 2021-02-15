@@ -3,10 +3,6 @@ package com.nmatt44.models;
 import com.nmatt44.service.JsonHandler;
 import kong.unirest.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Listing {
 
     private String id;
