@@ -39,7 +39,7 @@ public class JsonHandler {
         return result;
     }
 
-    public UUID getUUIDFromJSON(JSONObject jsonObject, String jsonKey) {
+    public UUID getUUIDFromJSON(JSONObject jsonObject, String jsonKey) throws IllegalArgumentException {
         UUID result = UUID.fromString(jsonObject.getString(jsonKey));
         return result;
     }

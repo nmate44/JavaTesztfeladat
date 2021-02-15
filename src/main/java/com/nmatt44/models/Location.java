@@ -19,7 +19,12 @@ public class Location {
     JsonHandler jsonHandler = new JsonHandler();
 
     public Location(JSONObject locationObject) {
-        this.id = jsonHandler.getUUIDFromJSON(locationObject, "id");
+        try {
+            this.id = jsonHandler.getUUIDFromJSON(locationObject, "id");
+        } catch (IllegalArgumentException exception) {
+            this.id = null;
+            System.out.println("Invalid UUID material, set to null.");
+        }
         this.managerName = jsonHandler.getStringFromJSON(locationObject, "manager_name");
         this.phone = jsonHandler.getStringFromJSON(locationObject, "phone");
         this.addressPrimary = jsonHandler.getStringFromJSON(locationObject, "address_primary");
