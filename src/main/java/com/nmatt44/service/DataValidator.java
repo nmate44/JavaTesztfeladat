@@ -105,7 +105,7 @@ public class DataValidator {
     }
 
     private boolean checkListingPriceValidity(double listingPrice, Connection dbConnection) {
-        if(listingPrice == 0) {
+        if(listingPrice <= 0) {
             LogRecord actualRecord = logger.setActualRecord(actualListing,
                     "listing_price",
                     dbConnection);
@@ -164,9 +164,10 @@ public class DataValidator {
     }
 
     private boolean checkListingStatusValidity(int listingStatus, Connection dbConnection) {
-        ResultSet queryResult = null;
+        String queryResult = null;
         try {
             queryResult = queryTool.selectListingStatusById(listingStatus, dbConnection);
+
         } catch(SQLException exception) {
             System.out.println("SQLException thrown at query: " + exception);
         }

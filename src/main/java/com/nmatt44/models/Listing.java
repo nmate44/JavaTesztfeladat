@@ -3,6 +3,10 @@ package com.nmatt44.models;
 import com.nmatt44.service.JsonHandler;
 import kong.unirest.json.JSONObject;
 
+import java.sql.SQLException;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 public class Listing {
@@ -16,7 +20,7 @@ public class Listing {
     private int quantity;
     private int listingStatus;
     private int marketplace;
-    private String uploadTime;
+    private java.sql.Date uploadTime;
     private String ownerEmailAddress;
 
     JsonHandler jsonHandler = new JsonHandler();
@@ -41,7 +45,12 @@ public class Listing {
         this.quantity = jsonHandler.getIntFromJSON(listingObject, "quantity");
         this.listingStatus = jsonHandler.getIntFromJSON(listingObject, "listing_status");
         this.marketplace = jsonHandler.getIntFromJSON(listingObject, "marketplace");
-        this.uploadTime = jsonHandler.getStringFromJSON(listingObject, "upload_time");
+        try {
+            this.uploadTime = generateSQLDate(listingObject);
+        } catch (ParseException exception) {
+            System.out.println("ParseException thrown: " + exception);
+            this.uploadTime = null;
+        }
         this.ownerEmailAddress = jsonHandler.getStringFromJSON(listingObject, "owner_email_address");
     }
 
@@ -81,11 +90,23 @@ public class Listing {
         return marketplace;
     }
 
-    public String getUploadTime() {
+    public java.sql.Date getUploadTime() {
         return uploadTime;
     }
 
     public String getOwnerEmailAddress() {
         return ownerEmailAddress;
+    }
+
+    private java.sql.Date generateSQLDate(JSONObject listingObject) throws ParseException {
+        String jsonDate = jsonHandler.getStringFromJSON(listingObject, "upload_time");
+        if(jsonDate == null) {
+            return null;
+        } else {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            Date parsedDate = dateFormat.parse(jsonDate);
+            java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+            return sqlDate;
+        }
     }
 }

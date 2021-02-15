@@ -55,6 +55,7 @@ public class Main {
         dataHandler.uploadLocationsToDb(dbConnection);
 
         dataHandler.syncListingData(apiListingUrl, dbConnection);
+        dataHandler.uploadListingsToDb(dbConnection);
 
     }
 

@@ -91,6 +91,16 @@ public class DataHandler {
         }
     }
 
+    public void uploadListingsToDb(Connection dbConnection) {
+        for(int i = 0; i < validatedListings.size(); i++) {
+            try {
+                queryTool.insertListing(validatedListings.get(i), dbConnection);
+            } catch (SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
+        }
+    }
+
     public void uploadListingStatusesToDb(Connection dbConnection) {
         for(int i = 0; i < listingStatuses.size(); i++) {
             try {

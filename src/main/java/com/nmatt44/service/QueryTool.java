@@ -1,5 +1,6 @@
 package com.nmatt44.service;
 
+import com.nmatt44.models.Listing;
 import com.nmatt44.models.ListingStatus;
 import com.nmatt44.models.Location;
 import com.nmatt44.models.Marketplace;
@@ -47,6 +48,36 @@ public class QueryTool {
         System.out.println("Marketplace inserted to DB.");
     }
 
+    public void insertListing(Listing listing, Connection dbConnection) throws SQLException {
+        String SQLQuery = "INSERT INTO public.listing "
+                + "(id, "
+                + "title, "
+                + "description, "
+                + "location_id, "
+                + "listing_price, "
+                + "currency, "
+                + "quantity, "
+                + "listing_status, "
+                + "marketplace, "
+                + "upload_time, "
+                + "owner_email_address) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        statement.setObject(1, listing.getId());
+        statement.setString(2, listing.getTitle());
+        statement.setString(3, listing.getDescription());
+        statement.setObject(4, listing.getInventoryItemLocationId());
+        statement.setDouble(5, listing.getListingPrice());
+        statement.setString(6, listing.getCurrency());
+        statement.setInt(7, listing.getQuantity());
+        statement.setInt(8, listing.getListingStatus());
+        statement.setInt(9, listing.getMarketplace());
+        statement.setObject(10, listing.getUploadTime());
+        statement.setString(11, listing.getOwnerEmailAddress());
+        statement.execute();
+        System.out.println("Listinginserted to DB.");
+    }
+
     public ResultSet selectMarketplaceById(int marketplaceId, Connection dbConnection) throws SQLException {
         String SQLQuery = "SELECT * FROM public.marketplace WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
@@ -57,10 +88,7 @@ public class QueryTool {
 
     public String selectMarketplaceNameById(int marketplaceId, Connection dbConnection) throws SQLException {
         String marketplaceName = null;
-        String SQLQuery = "SELECT * FROM public.marketplace WHERE id=?";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
-        statement.setInt(1, marketplaceId);
-        ResultSet resultSet = statement.executeQuery();
+        ResultSet resultSet = selectMarketplaceById(marketplaceId, dbConnection);
         if(resultSet.next()) {
             marketplaceName = resultSet.getString("marketplace_name");
         }
@@ -75,12 +103,16 @@ public class QueryTool {
         return resultSet;
     }
 
-    public ResultSet selectListingStatusById(int listingStatusId, Connection dbConnection) throws SQLException {
+    public String selectListingStatusById(int listingStatusId, Connection dbConnection) throws SQLException {
+        String listingStatus = null;
         String SQLQuery = "SELECT * FROM public.listing_status WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
         statement.setObject(1, listingStatusId);
         ResultSet resultSet = statement.executeQuery();
-        return resultSet;
+        if(resultSet.next()) {
+            listingStatus = resultSet.getString("status_name");
+        }
+        return listingStatus;
     }
 
 }
