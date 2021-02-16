@@ -94,9 +94,9 @@ public class DataValidator {
     }
 
     private boolean checkLocationIdValidity(UUID locationId, Connection dbConnection) {
-        ResultSet queryResult = null;
+        String queryResult = null;
         try {
-            queryResult = queryTool.selectLocationById(locationId, dbConnection);
+            queryResult = queryTool.selectLocationAddressById(locationId, dbConnection);
         } catch (SQLException exception) {
             System.out.println("SQLException thrown at query: " + exception);
         }
@@ -173,8 +173,7 @@ public class DataValidator {
     private boolean checkListingStatusValidity(int listingStatus, Connection dbConnection) {
         String queryResult = null;
         try {
-            queryResult = queryTool.selectListingStatusById(listingStatus, dbConnection);
-
+            queryResult = queryTool.selectListingStatusNameById(listingStatus, dbConnection);
         } catch(SQLException exception) {
             System.out.println("SQLException thrown at query: " + exception);
         }

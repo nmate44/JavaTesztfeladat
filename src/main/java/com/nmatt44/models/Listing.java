@@ -105,8 +105,7 @@ public class Listing {
         } else {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             Date parsedDate = dateFormat.parse(jsonDate);
-            java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
-            return sqlDate;
+            return new java.sql.Date(parsedDate.getTime());
         }
     }
 }

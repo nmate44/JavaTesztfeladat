@@ -31,7 +31,7 @@ public class DataHandler {
         JSONArray marketplaceArray = apiResponse.getBody().getArray();
         generateListOfMarketplaces(marketplaceArray);
         uploadMarketplacesToDb(dbConnection);
-        System.out.println("Marketplaces synchronized.");
+        System.out.println("> Marketplaces synchronized.");
     }
 
     private void generateListOfMarketplaces(JSONArray marketplaceArray) {
@@ -50,6 +50,7 @@ public class DataHandler {
                 System.out.println("SQLException thrown: " + exception);
             }
         }
+        System.out.println("  > Marketplaces are in database.");
     }
 
     public void syncLocationData(String apiUrl, Connection dbConnection) {
@@ -57,6 +58,7 @@ public class DataHandler {
         JSONArray locationArray = apiResponse.getBody().getArray();
         generateListOfLocations(locationArray);
         uploadLocationsToDb(dbConnection);
+        System.out.println("> Locations synchronized.");
     }
 
     private void generateListOfLocations(JSONArray locationArray) {
@@ -75,6 +77,7 @@ public class DataHandler {
                 System.out.println("SQLException thrown: " + exception);
             }
         }
+        System.out.println("  > Locations are in database.");
     }
 
     public void syncListingStatusData(String apiUrl, Connection dbConnection) {
@@ -82,6 +85,7 @@ public class DataHandler {
         JSONArray listingStatusArray = apiResponse.getBody().getArray();
         generateListOfListingStatuses(listingStatusArray);
         uploadListingStatusesToDb(dbConnection);
+        System.out.println("> Listing statuses synchronized.");
     }
 
     private void generateListOfListingStatuses(JSONArray listingStatusArray) {
@@ -89,7 +93,6 @@ public class DataHandler {
         for(int i = 0; i < listingStatusArray.length(); i++) {
             JSONObject listingStatusObject = listingStatusArray.getJSONObject(i);
             listingStatuses.add(new ListingStatus(listingStatusObject));
-            System.out.println("Listing status added: " + listingStatuses.get(i).getStatusName());
         }
     }
 
@@ -101,6 +104,7 @@ public class DataHandler {
                 System.out.println("SQLException thrown: " + exception);
             }
         }
+        System.out.println("  > Listing statuses are in database.");
     }
 
     public void syncListingData(String apiUrl, Connection dbConnection) {
@@ -108,28 +112,31 @@ public class DataHandler {
         JSONArray listingArray = apiResponse.getBody().getArray();
         generateListOfListings(listingArray);
         validatedListings = dataValidator.validateListings(listings, dbConnection);
+        uploadListingsToDb(dbConnection);
+        System.out.println("> Listings validated and synchronized.");
     }
 
     private void generateListOfListings(JSONArray listingArray) {
         listings = new ArrayList<>();
+        int checker = 0;
         for(int i = 0; i < listingArray.length(); i++) {
             JSONObject listingObject = listingArray.getJSONObject(i);
             listings.add(new Listing(listingObject));
-            System.out.println(
-                    "Listing added: " + listings.get(i).getTitle()
-                    + "; upload_time: " + listings.get(i).getUploadTime()
-            );
+            checker++;
         }
+        System.out.println("Listing ArrayList check: " + checker);
     }
 
     public void uploadListingsToDb(Connection dbConnection) {
-        for(int i = 0; i < validatedListings.size(); i++) {
+        int insertCounter;
+        for(insertCounter = 0; insertCounter < validatedListings.size(); insertCounter++) {
             try {
-                queryTool.insertListing(validatedListings.get(i), dbConnection);
+                queryTool.insertListing(validatedListings.get(insertCounter), dbConnection);
             } catch (SQLException exception) {
                 System.out.println("SQLException thrown: " + exception);
             }
         }
+        System.out.println("  > Valid listing records are in database, new records: " + insertCounter);
     }
 
 }

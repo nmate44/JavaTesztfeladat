@@ -19,7 +19,6 @@ public class QueryTool {
         statement.setInt(1, listingStatus.getId());
         statement.setString(2, listingStatus.getStatusName());
         statement.execute();
-        System.out.println("Listing status inserted to DB.");
     }
 
     public void insertMarketplace(Marketplace marketplace, Connection dbConnection) throws SQLException {
@@ -28,7 +27,6 @@ public class QueryTool {
         statement.setInt(1, marketplace.getId());
         statement.setString(2, marketplace.getMarketplaceName());
         statement.execute();
-        System.out.println("Marketplace inserted to DB.");
     }
 
     public void insertLocation(Location location, Connection dbConnection) throws SQLException {
@@ -45,7 +43,6 @@ public class QueryTool {
         statement.setString(7, location.getTown());
         statement.setString(8, location.getPostalCode());
         statement.execute();
-        System.out.println("Marketplace inserted to DB.");
     }
 
     public void insertListing(Listing listing, Connection dbConnection) throws SQLException {
@@ -75,7 +72,6 @@ public class QueryTool {
         statement.setObject(10, listing.getUploadTime());
         statement.setString(11, listing.getOwnerEmailAddress());
         statement.execute();
-        System.out.println("Listinginserted to DB.");
     }
 
     public ResultSet selectMarketplaceById(int marketplaceId, Connection dbConnection) throws SQLException {
@@ -95,15 +91,20 @@ public class QueryTool {
         return marketplaceName;
     }
 
-    public ResultSet selectLocationById(UUID locationId, Connection dbConnection) throws SQLException {
+    // Needed a valid not null field without complications
+    public String selectLocationAddressById(UUID locationId, Connection dbConnection) throws SQLException {
         String SQLQuery = "SELECT * FROM public.location WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
         statement.setObject(1, locationId);
         ResultSet resultSet = statement.executeQuery();
-        return resultSet;
+        String foundPrimaryAddress = null;
+        if(resultSet.next()) {
+            foundPrimaryAddress = resultSet.getString("address_primary");
+        }
+        return foundPrimaryAddress;
     }
 
-    public String selectListingStatusById(int listingStatusId, Connection dbConnection) throws SQLException {
+    public String selectListingStatusNameById(int listingStatusId, Connection dbConnection) throws SQLException {
         String listingStatus = null;
         String SQLQuery = "SELECT * FROM public.listing_status WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);

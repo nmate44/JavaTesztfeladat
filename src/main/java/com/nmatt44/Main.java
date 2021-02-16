@@ -14,15 +14,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Properties config = new Properties();
-        Connection dbConnection;
-
-        try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
-            config.load(inputFile);
-            System.out.println("Config file found.");
+        try {
+            Properties config = loadConfigFile("src/main/resources/config.properties");
+            Connection dbConnection;
             try {
                 dbConnection = connectToDatabase(config);
-                System.out.println("Success!");
                 syncAndHandleDataFromAPI(config, dbConnection);
             }
             catch (SQLException exception) {
@@ -35,11 +31,19 @@ public class Main {
 
     }
 
+    private static Properties loadConfigFile(String configFilePath) throws IOException {
+        System.out.println("Find config.properties file...");
+        InputStream inputFile = new FileInputStream(configFilePath);
+        Properties configFile = new Properties();
+        configFile.load(inputFile);
+        return configFile;
+    }
+
     private static Connection connectToDatabase(Properties config) throws SQLException {
+        System.out.println("Connecting to database...");
         String connectionUrl = config.getProperty("dbUrl")
                 + "?user=" + config.getProperty("dbUser")
                 + "&password=" + config.getProperty("dbPassword");
-        System.out.println("Connecting to database...");
         return DriverManager.getConnection(connectionUrl);
     }
 
@@ -50,7 +54,6 @@ public class Main {
         dataHandler.syncListingStatusData(config.getProperty("apiListingStatusUrl"), dbConnection);
         dataHandler.syncLocationData(config.getProperty("apiLocationUrl"), dbConnection);
         dataHandler.syncListingData(config.getProperty("apiListingUrl"), dbConnection);
-        dataHandler.uploadListingsToDb(dbConnection);
         System.out.println("Done!");
     }
 

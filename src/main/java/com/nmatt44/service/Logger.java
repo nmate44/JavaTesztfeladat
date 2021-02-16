@@ -17,7 +17,6 @@ public class Logger {
 
     public void logInvalidDataRecord(LogRecord logRecord) {
         logRecords.add(logRecord);
-        System.out.println("Log record added: " + logRecord.getListingId() + ";" + logRecord.getMarketplaceName() + ";" + logRecord.getInvalidField());
     }
 
     public LogRecord setActualRecord(Listing actualListing, String actualField, Connection dbConnection) {
@@ -32,7 +31,6 @@ public class Logger {
     }
 
     public void generateCSVLog() throws IOException {
-        System.out.println("Start CSV logging...");
         File logOutputFile = new File(
                 "C:/Users/Lenovo/IdeaProjects/JavaTesztfeladat/src/main/log/importLog.csv"
         );
@@ -45,7 +43,7 @@ public class Logger {
             printWriter.flush();
             lineCounter++;
         }
-        System.out.println("CSV Logging successful, invalid lines: " + lineCounter);
+        System.out.println("CSV Logging done, logged errors: " + lineCounter);
     }
 
     private String convertToCSV(LogRecord logRecord) {
