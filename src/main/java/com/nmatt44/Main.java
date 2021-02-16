@@ -1,7 +1,6 @@
 package com.nmatt44;
 
 import com.nmatt44.service.DataHandler;
-import com.nmatt44.service.QueryTool;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,49 +12,26 @@ import java.util.Properties;
 
 public class Main {
 
-    private static String apiListingUrl;
-    private static String apiLocationUrl;
-    private static String apiListingStatusUrl;
-    private static String apiMarketplaceUrl;
-
     public static void main(String[] args) {
 
-        DataHandler dataHandler = new DataHandler();
         Properties config = new Properties();
-        Connection dbConnection = null;
+        Connection dbConnection;
 
         try(InputStream inputFile = new FileInputStream("src/main/resources/config.properties")) {
-            System.out.println("Properties file found, start configuration.");
             config.load(inputFile);
-
-            apiListingUrl = config.getProperty("apiListingUrl");
-            apiLocationUrl = config.getProperty("apiLocationUrl");
-            apiListingStatusUrl = config.getProperty("apiListingStatusUrl");
-            apiMarketplaceUrl = config.getProperty("apiMarketplaceUrl");
-            System.out.println("API data set.");
-
+            System.out.println("Config file found.");
             try {
                 dbConnection = connectToDatabase(config);
-                System.out.println("Connected to Database.");
-            } catch (SQLException exception) {
-                System.out.println("SQL exception thrown: " + exception);
+                System.out.println("Success!");
+                syncAndHandleDataFromAPI(config, dbConnection);
             }
-
-        } catch(IOException exception) {
-            System.out.println("IO exception thrown: " + exception);
+            catch (SQLException exception) {
+                System.out.println("SQLException at connecting to Database: " + exception);
+            }
         }
-
-        dataHandler.syncMarketplaceData(apiMarketplaceUrl);
-        dataHandler.uploadMarketplacesToDb(dbConnection);
-
-        dataHandler.syncListingStatusData(apiListingStatusUrl);
-        dataHandler.uploadListingStatusesToDb(dbConnection);
-
-        dataHandler.syncLocationData(apiLocationUrl);
-        dataHandler.uploadLocationsToDb(dbConnection);
-
-        dataHandler.syncListingData(apiListingUrl, dbConnection);
-        dataHandler.uploadListingsToDb(dbConnection);
+        catch(IOException exception) {
+            System.out.println("IOException at loading config file: " + exception);
+        }
 
     }
 
@@ -63,8 +39,19 @@ public class Main {
         String connectionUrl = config.getProperty("dbUrl")
                 + "?user=" + config.getProperty("dbUser")
                 + "&password=" + config.getProperty("dbPassword");
-        System.out.println("Database URL set.");
+        System.out.println("Connecting to database...");
         return DriverManager.getConnection(connectionUrl);
+    }
+
+    private static void syncAndHandleDataFromAPI(Properties config, Connection dbConnection) {
+        DataHandler dataHandler = new DataHandler();
+        System.out.println("Start data synchronization and handling from API...");
+        dataHandler.syncMarketplaceData(config.getProperty("apiMarketplaceUrl"), dbConnection);
+        dataHandler.syncListingStatusData(config.getProperty("apiListingStatusUrl"), dbConnection);
+        dataHandler.syncLocationData(config.getProperty("apiLocationUrl"), dbConnection);
+        dataHandler.syncListingData(config.getProperty("apiListingUrl"), dbConnection);
+        dataHandler.uploadListingsToDb(dbConnection);
+        System.out.println("Done!");
     }
 
 }

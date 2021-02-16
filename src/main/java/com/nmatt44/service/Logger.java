@@ -32,6 +32,7 @@ public class Logger {
     }
 
     public void generateCSVLog() throws IOException {
+        System.out.println("Start CSV logging...");
         File logOutputFile = new File(
                 "C:/Users/Lenovo/IdeaProjects/JavaTesztfeladat/src/main/log/importLog.csv"
         );
@@ -44,7 +45,7 @@ public class Logger {
             printWriter.flush();
             lineCounter++;
         }
-        System.out.println("CSV Logging successful: New file, lines: " + lineCounter);
+        System.out.println("CSV Logging successful, invalid lines: " + lineCounter);
     }
 
     private String convertToCSV(LogRecord logRecord) {

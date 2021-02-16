@@ -18,14 +18,15 @@ public class DataValidator {
     private final Logger logger = new Logger();
 
     public ArrayList<Listing> validateListings(ArrayList<Listing> listings, Connection dbConnection) {
+        System.out.println("Validating listings...");
         ArrayList<Listing> validListings = new ArrayList<>();
         for(int i = 0; i < listings.size(); i++) {
             actualListing = listings.get(i);
             if(validateOneListing(actualListing, dbConnection)) {
                 validListings.add(actualListing);
-                System.out.println("Valid listing found.");
             }
         }
+        System.out.println("Done!");
         try {
             logger.generateCSVLog();
         } catch (IOException exception) {

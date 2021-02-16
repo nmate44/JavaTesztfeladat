@@ -22,13 +22,16 @@ public class DataHandler {
     private static ArrayList<ListingStatus> listingStatuses;
     private static ArrayList<Listing> listings;
     private static ArrayList<Listing> validatedListings;
-    private QueryTool queryTool = new QueryTool();
-    private DataValidator dataValidator = new DataValidator();
 
-    public void syncMarketplaceData(String apiUrl) {
+    private final QueryTool queryTool = new QueryTool();
+    private final DataValidator dataValidator = new DataValidator();
+
+    public void syncMarketplaceData(String apiUrl, Connection dbConnection) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
         JSONArray marketplaceArray = apiResponse.getBody().getArray();
         generateListOfMarketplaces(marketplaceArray);
+        uploadMarketplacesToDb(dbConnection);
+        System.out.println("Marketplaces synchronized.");
     }
 
     private void generateListOfMarketplaces(JSONArray marketplaceArray) {
@@ -36,14 +39,24 @@ public class DataHandler {
         for(int i = 0; i < marketplaceArray.length(); i++) {
             JSONObject marketplaceObject = marketplaceArray.getJSONObject(i);
             marketplaces.add(new Marketplace(marketplaceObject));
-            System.out.println("Marketplace added: " + marketplaces.get(i).getMarketplaceName());
         }
     }
 
-    public void syncLocationData(String apiUrl) {
+    public void uploadMarketplacesToDb(Connection dbConnection) {
+        for(int i = 0; i < marketplaces.size(); i++) {
+            try {
+                queryTool.insertMarketplace(marketplaces.get(i), dbConnection);
+            } catch (SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
+        }
+    }
+
+    public void syncLocationData(String apiUrl, Connection dbConnection) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
         JSONArray locationArray = apiResponse.getBody().getArray();
         generateListOfLocations(locationArray);
+        uploadLocationsToDb(dbConnection);
     }
 
     private void generateListOfLocations(JSONArray locationArray) {
@@ -51,16 +64,24 @@ public class DataHandler {
         for(int i = 0; i < locationArray.length(); i++) {
             JSONObject locationObject = locationArray.getJSONObject(i);
             locations.add(new Location(locationObject));
-            System.out.println("Location added: " + locations.get(i).getId()
-                    + "; Country: " + locations.get(i).getCountry()
-                    + "; Town: " + locations.get(i).getTown());
         }
     }
 
-    public void syncListingStatusData(String apiUrl) {
+    public void uploadLocationsToDb(Connection dbConnection) {
+        for(int i = 0; i < locations.size(); i++) {
+            try {
+                queryTool.insertLocation(locations.get(i), dbConnection);
+            } catch(SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
+        }
+    }
+
+    public void syncListingStatusData(String apiUrl, Connection dbConnection) {
         HttpResponse<JsonNode> apiResponse = Unirest.get(apiUrl).asJson();
         JSONArray listingStatusArray = apiResponse.getBody().getArray();
         generateListOfListingStatuses(listingStatusArray);
+        uploadListingStatusesToDb(dbConnection);
     }
 
     private void generateListOfListingStatuses(JSONArray listingStatusArray) {
@@ -69,6 +90,16 @@ public class DataHandler {
             JSONObject listingStatusObject = listingStatusArray.getJSONObject(i);
             listingStatuses.add(new ListingStatus(listingStatusObject));
             System.out.println("Listing status added: " + listingStatuses.get(i).getStatusName());
+        }
+    }
+
+    public void uploadListingStatusesToDb(Connection dbConnection) {
+        for(int i = 0; i < listingStatuses.size(); i++) {
+            try {
+                queryTool.insertListingStatus(listingStatuses.get(i), dbConnection);
+            } catch (SQLException exception) {
+                System.out.println("SQLException thrown: " + exception);
+            }
         }
     }
 
@@ -96,36 +127,6 @@ public class DataHandler {
             try {
                 queryTool.insertListing(validatedListings.get(i), dbConnection);
             } catch (SQLException exception) {
-                System.out.println("SQLException thrown: " + exception);
-            }
-        }
-    }
-
-    public void uploadListingStatusesToDb(Connection dbConnection) {
-        for(int i = 0; i < listingStatuses.size(); i++) {
-            try {
-                queryTool.insertListingStatus(listingStatuses.get(i), dbConnection);
-            } catch (SQLException exception) {
-            System.out.println("SQLException thrown: " + exception);
-            }
-        }
-    }
-
-    public void uploadMarketplacesToDb(Connection dbConnection) {
-        for(int i = 0; i < marketplaces.size(); i++) {
-            try {
-                queryTool.insertMarketplace(marketplaces.get(i), dbConnection);
-            } catch (SQLException exception) {
-                System.out.println("SQLException thrown: " + exception);
-            }
-        }
-    }
-
-    public void uploadLocationsToDb(Connection dbConnection) {
-        for(int i = 0; i < locations.size(); i++) {
-            try {
-                queryTool.insertLocation(locations.get(i), dbConnection);
-            } catch(SQLException exception) {
                 System.out.println("SQLException thrown: " + exception);
             }
         }
