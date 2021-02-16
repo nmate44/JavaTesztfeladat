@@ -14,26 +14,26 @@ import java.util.UUID;
 public class QueryTool {
 
     public void insertListingStatus(ListingStatus listingStatus, Connection dbConnection) throws SQLException {
-        String SQLQuery = "INSERT INTO public.listing_status (id, status_name) " + "VALUES (?, ?)";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        String SQL = "INSERT INTO public.listing_status (id, status_name) " + "VALUES (?, ?)";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setInt(1, listingStatus.getId());
         statement.setString(2, listingStatus.getStatusName());
         statement.execute();
     }
 
     public void insertMarketplace(Marketplace marketplace, Connection dbConnection) throws SQLException {
-        String SQLQuery = "INSERT INTO public.marketplace (id, marketplace_name) " + "VALUES (?, ?)";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        String SQL = "INSERT INTO public.marketplace (id, marketplace_name) " + "VALUES (?, ?)";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setInt(1, marketplace.getId());
         statement.setString(2, marketplace.getMarketplaceName());
         statement.execute();
     }
 
     public void insertLocation(Location location, Connection dbConnection) throws SQLException {
-        String SQLQuery = "INSERT INTO public.location "
+        String SQL = "INSERT INTO public.location "
                 + "(id, manager_name, phone, address_primary, address_secondary, country, town, postal_code) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setObject(1, location.getId());
         statement.setString(2, location.getManagerName());
         statement.setString(3, location.getPhone());
@@ -46,7 +46,7 @@ public class QueryTool {
     }
 
     public void insertListing(Listing listing, Connection dbConnection) throws SQLException {
-        String SQLQuery = "INSERT INTO public.listing "
+        String SQL = "INSERT INTO public.listing "
                 + "(id, "
                 + "title, "
                 + "description, "
@@ -59,7 +59,7 @@ public class QueryTool {
                 + "upload_time, "
                 + "owner_email_address) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setObject(1, listing.getId());
         statement.setString(2, listing.getTitle());
         statement.setString(3, listing.getDescription());
@@ -75,8 +75,8 @@ public class QueryTool {
     }
 
     public ResultSet selectMarketplaceById(int marketplaceId, Connection dbConnection) throws SQLException {
-        String SQLQuery = "SELECT * FROM public.marketplace WHERE id=?";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        String SQL = "SELECT * FROM public.marketplace WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setInt(1, marketplaceId);
         ResultSet resultSet = statement.executeQuery();
         return resultSet;
@@ -93,8 +93,8 @@ public class QueryTool {
 
     // Needed a valid not null field without complications
     public String selectLocationAddressById(UUID locationId, Connection dbConnection) throws SQLException {
-        String SQLQuery = "SELECT * FROM public.location WHERE id=?";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        String SQL = "SELECT * FROM public.location WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setObject(1, locationId);
         ResultSet resultSet = statement.executeQuery();
         String foundPrimaryAddress = null;
@@ -106,14 +106,74 @@ public class QueryTool {
 
     public String selectListingStatusNameById(int listingStatusId, Connection dbConnection) throws SQLException {
         String listingStatus = null;
-        String SQLQuery = "SELECT * FROM public.listing_status WHERE id=?";
-        PreparedStatement statement = dbConnection.prepareStatement(SQLQuery);
+        String SQL = "SELECT * FROM public.listing_status WHERE id=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
         statement.setObject(1, listingStatusId);
         ResultSet resultSet = statement.executeQuery();
         if(resultSet.next()) {
             listingStatus = resultSet.getString("status_name");
         }
         return listingStatus;
+    }
+
+    public int countListings(Connection dbConnection) throws SQLException {
+        String SQL = "SELECT COUNT(id) FROM public.listing";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        ResultSet resultSet = statement.executeQuery();
+        int countedListings = 0;
+        if(resultSet.next()) {
+            countedListings = resultSet.getInt("count");
+        }
+        return countedListings;
+    }
+
+    public int countListingsByMarketplace(int marketplaceId, Connection dbConnection) throws SQLException {
+        String SQL = "SELECT COUNT(id) FROM public.listing WHERE marketplace=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        statement.setInt(1, marketplaceId);
+        ResultSet resultSet = statement.executeQuery();
+        int countedListings = 0;
+        if(resultSet.next()) {
+            countedListings = resultSet.getInt("count");
+        }
+        return countedListings;
+    }
+
+    public double sumTotalListingPriceByMarketplace(int marketplaceId, Connection dbConnection) throws SQLException {
+        String SQL = "SELECT SUM(listing_price) FROM public.listing WHERE marketplace=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        statement.setInt(1, marketplaceId);
+        ResultSet resultSet = statement.executeQuery();
+        double sumOfPrices = 0;
+        if(resultSet.next()) {
+            sumOfPrices = resultSet.getDouble("sum");
+        }
+        return sumOfPrices;
+    }
+
+    public double averageListingPriceByMarketplace(int marketplaceId, Connection dbConnection) throws SQLException {
+        String SQL = "SELECT AVG(listing_price) FROM public.listing WHERE marketplace=?";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        statement.setInt(1, marketplaceId);
+        ResultSet resultSet = statement.executeQuery();
+        double avgOfPrices = 0;
+        if(resultSet.next()) {
+            avgOfPrices = resultSet.getDouble("avg");
+        }
+        return avgOfPrices;
+    }
+
+    public String findBestListerEmail(Connection dbConnection) throws SQLException {
+        String SQL = "SELECT COUNT(id), owner_email_address FROM public.listing "
+                + "GROUP BY owner_email_address "
+                + "ORDER BY count DESC LIMIT 1";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        ResultSet resultSet = statement.executeQuery();
+        String bestLister = null;
+        if(resultSet.next()) {
+            bestLister = resultSet.getString("owner_email_address");
+        }
+        return bestLister;
     }
 
 }
