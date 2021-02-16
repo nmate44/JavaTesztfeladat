@@ -4,6 +4,7 @@ import com.nmatt44.models.Listing;
 import com.nmatt44.models.LogRecord;
 import org.apache.commons.validator.routines.EmailValidator;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +25,11 @@ public class DataValidator {
                 validListings.add(actualListing);
                 System.out.println("Valid listing found.");
             }
+        }
+        try {
+            logger.generateCSVLog();
+        } catch (IOException exception) {
+            System.out.println("Exception occurred during logging: " + exception);
         }
         return validListings;
     }
