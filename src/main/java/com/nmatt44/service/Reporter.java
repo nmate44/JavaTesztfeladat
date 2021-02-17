@@ -1,11 +1,9 @@
 package com.nmatt44.service;
 
 import kong.unirest.json.JSONObject;
+import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +29,21 @@ public class Reporter {
         PrintWriter printWriter = new PrintWriter(reportOutputFile);
         printWriter.write(jsonReport.toString());
         printWriter.close();
+        FileInputStream reportOutputFileStream = new FileInputStream(
+                "C:/Users/Lenovo/IdeaProjects/JavaTesztfeladat/src/main/report/report.json");
+        try {
+            uploadReportToFTP(reportOutputFileStream);
+        } catch (IOException exception) {
+            System.out.println(exception);
+        }
         System.out.println("Report: " + jsonReport.toString());
+    }
+
+    public void uploadReportToFTP(FileInputStream reportOutputFile) throws IOException {
+        FTPClient client = new FTPClient();
+        client.connect("127.0.0.1");
+        client.login("wobtest", "wobtest96");
+        client.storeFile("report.json", reportOutputFile);
     }
 
     private void addSimpleData(JSONObject jsonReport) {
