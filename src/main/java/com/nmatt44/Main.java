@@ -21,7 +21,7 @@ public class Main {
             try {
                 dbConnection = connectToDatabase(config);
                 syncAndHandleDataFromAPI(config, dbConnection);
-                testReportQueries(dbConnection);
+                reportStatistics(dbConnection);
 
             }
             catch (SQLException exception) {
@@ -60,7 +60,7 @@ public class Main {
         System.out.println("Done!");
     }
 
-    private static void testReportQueries(Connection dbConnection) throws SQLException {
+    private static void reportStatistics(Connection dbConnection) throws SQLException {
         Reporter reporter = new Reporter(dbConnection);
         try{
             reporter.generateReport();

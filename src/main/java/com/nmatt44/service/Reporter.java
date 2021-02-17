@@ -80,6 +80,7 @@ public class Reporter {
                         monthlyRecord = new JSONObject();
                         lastMonthOfYear = monthOfYear;
                     }
+                    addMonthlyBestListerRow(queryResult, monthlyRecord);
                     addMonthlyRecordRowsByMarketplace(queryResult, monthlyRecord);
                 }
                 monthlyReports.put(monthOfYear, monthlyRecord);
@@ -99,6 +100,14 @@ public class Reporter {
         monthlyRecord.put(sumJsonKey, queryResult.getDouble("sum"));
         String avgJsonKey = "average" + marketplaceName + "ListingPrice";
         monthlyRecord.put(avgJsonKey, queryResult.getDouble("avg"));
+    }
+
+    private void addMonthlyBestListerRow(ResultSet queryResult, JSONObject monthlyRecord) throws SQLException {
+        String bestListerEmail = queryTool.findMonthlyBestListerEmail(
+                dbConnection,
+                queryResult.getInt("year"),
+                queryResult.getInt("month"));
+        monthlyRecord.put("monthlyBestLister", bestListerEmail);
     }
 
 }

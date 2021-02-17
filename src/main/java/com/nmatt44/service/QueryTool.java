@@ -218,4 +218,30 @@ public class QueryTool {
         return statement.executeQuery();
     }
 
+    public String findMonthlyBestListerEmail(Connection dbConnection, int year, int month) throws SQLException {
+        String SQL = "SELECT "
+                    + "EXTRACT(YEAR FROM upload_time) AS year, "
+                    + "EXTRACT(MONTH FROM upload_time) AS month, "
+                    + "COUNT(id), "
+                    + "owner_email_address "
+                + "FROM public.listing "
+                + "WHERE EXTRACT(YEAR FROM upload_time)=? AND EXTRACT(MONTH FROM upload_time)=? "
+                + "GROUP BY "
+                    + "EXTRACT(YEAR FROM upload_time), "
+                    + "EXTRACT(MONTH FROM upload_time), "
+                    + "owner_email_address "
+                + "ORDER BY "
+                    + "COUNT(id) DESC LIMIT 1";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        statement.setInt(1, year);
+        statement.setInt(2, month);
+        ResultSet queryResult = statement.executeQuery();
+        if(queryResult.next()) {
+            System.out.println("Monthly Lister Found: " + queryResult.getString("owner_email_address"));
+            return queryResult.getString("owner_email_address");
+        }
+        System.out.println("No monthly lister found...............");
+        return null;
+    }
+
 }
