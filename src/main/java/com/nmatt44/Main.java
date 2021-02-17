@@ -2,6 +2,7 @@ package com.nmatt44;
 
 import com.nmatt44.service.DataHandler;
 import com.nmatt44.service.QueryTool;
+import com.nmatt44.service.Reporter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class Main {
                 dbConnection = connectToDatabase(config);
                 syncAndHandleDataFromAPI(config, dbConnection);
                 testReportQueries(dbConnection);
+
             }
             catch (SQLException exception) {
                 System.out.println("SQLException at connecting to Database: " + exception);
@@ -60,15 +62,8 @@ public class Main {
     }
 
     private static void testReportQueries(Connection dbConnection) throws SQLException {
-        QueryTool queryTool = new QueryTool();
-        System.out.println("Total listings: " + queryTool.countListings(dbConnection));
-        System.out.println("EBAY listings: " + queryTool.countListingsByMarketplace(1, dbConnection));
-        System.out.println("EBAY total listing price: " + queryTool.sumTotalListingPriceByMarketplace(1, dbConnection));
-        System.out.println("EBAY avg listing price: " + queryTool.averageListingPriceByMarketplace(1, dbConnection));
-        System.out.println("Amazon listings: " + queryTool.countListingsByMarketplace(2, dbConnection));
-        System.out.println("Amazon total listing price: " + queryTool.sumTotalListingPriceByMarketplace(2, dbConnection));
-        System.out.println("Amazon avg listing price: " + queryTool.averageListingPriceByMarketplace(2, dbConnection));
-        System.out.println("Best lister email: " + queryTool.findBestListerEmail(dbConnection));
+        Reporter reporter = new Reporter(dbConnection);
+        reporter.generateReport();
     }
 
 }

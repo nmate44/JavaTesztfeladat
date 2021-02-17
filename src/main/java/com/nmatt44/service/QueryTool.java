@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public class QueryTool {
 
+    // Insert queries:
+
     public void insertListingStatus(ListingStatus listingStatus, Connection dbConnection) throws SQLException {
         String SQL = "INSERT INTO public.listing_status (id, status_name) " + "VALUES (?, ?)";
         PreparedStatement statement = dbConnection.prepareStatement(SQL);
@@ -74,6 +76,8 @@ public class QueryTool {
         statement.execute();
     }
 
+    // Select queries:
+
     public ResultSet selectMarketplaceById(int marketplaceId, Connection dbConnection) throws SQLException {
         String SQL = "SELECT * FROM public.marketplace WHERE id=?";
         PreparedStatement statement = dbConnection.prepareStatement(SQL);
@@ -115,6 +119,8 @@ public class QueryTool {
         }
         return listingStatus;
     }
+
+    // Report-specific queries:
 
     public int countListings(Connection dbConnection) throws SQLException {
         String SQL = "SELECT COUNT(id) FROM public.listing";
@@ -174,6 +180,42 @@ public class QueryTool {
             bestLister = resultSet.getString("owner_email_address");
         }
         return bestLister;
+    }
+
+    public ResultSet selectReportDataByMarketplace(Connection dbConnection) throws SQLException {
+        String SQL =
+                "SELECT "
+                    + "public.marketplace.marketplace_name, "
+                    + "COUNT(public.listing.id), "
+                    + "SUM(public.listing.listing_price), "
+                    + "AVG(public.listing.listing_price) "
+                + "FROM public.listing "
+                + "INNER JOIN public.marketplace ON public.listing.marketplace=public.marketplace.id "
+                + "GROUP BY public.marketplace.marketplace_name";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        return statement.executeQuery();
+    }
+
+    public ResultSet selectMonthlyReportDataByMarketplace(Connection dbConnection) throws SQLException {
+        String SQL =
+                "SELECT "
+                    + "EXTRACT(YEAR FROM public.listing.upload_time) AS year, "
+                    + "EXTRACT(MONTH FROM public.listing.upload_time) AS month, "
+                    + "public.marketplace.marketplace_name, "
+                    + "COUNT(public.listing.id), "
+                    + "SUM(public.listing.listing_price), "
+                    + "AVG(public.listing.listing_price) "
+                + "FROM public.listing "
+                + "INNER JOIN public.marketplace ON public.listing.marketplace=public.marketplace.id "
+                + "GROUP BY "
+                    + "EXTRACT(YEAR FROM upload_time), "
+                    + "EXTRACT(MONTH FROM upload_time), "
+                    + "public.marketplace.marketplace_name "
+                + "ORDER BY "
+                    + "EXTRACT(YEAR FROM upload_time), "
+                    + "EXTRACT(MONTH FROM upload_time) ";
+        PreparedStatement statement = dbConnection.prepareStatement(SQL);
+        return statement.executeQuery();
     }
 
 }
