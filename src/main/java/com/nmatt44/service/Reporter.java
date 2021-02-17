@@ -54,43 +54,40 @@ public class Reporter {
     private void addMonthlyData(JSONObject jsonReport) {
         try {
             ResultSet queryResult = queryTool.selectMonthlyReportDataByMarketplace(dbConnection);
+            JSONObject monthlyReports = new JSONObject();
             if(queryResult.next()) {
                 JSONObject monthlyRecord = new JSONObject();
                 String monthOfYear = queryResult.getInt("year") + "/"
                         + queryResult.getInt("month");
                 String lastMonthOfYear = monthOfYear;
-                String marketplaceName = queryResult.getString("marketplace_name");
-                String countJsonKey = "total" + marketplaceName + "ListingCount";
-                monthlyRecord.put(countJsonKey, queryResult.getInt("count"));
-                String sumJsonKey = "total" + marketplaceName + "ListingPrice";
-                monthlyRecord.put(sumJsonKey, queryResult.getDouble("sum"));
-                String avgJsonKey = "average" + marketplaceName + "ListingPrice";
-                monthlyRecord.put(avgJsonKey, queryResult.getDouble("avg"));
-                System.out.println("First month: " + monthOfYear + ": " + monthlyRecord.toString());
+                addMonthlyRecordRowsByMarketplace(queryResult, monthlyRecord);
                 while(queryResult.next()) {
                     monthOfYear = queryResult.getInt("year") + "/"
                             + queryResult.getInt("month");
-                    System.out.println("Month check: " + monthOfYear);
                     if (!monthOfYear.equals(lastMonthOfYear)) {
-                        jsonReport.put(lastMonthOfYear, monthlyRecord);
-                        System.out.println(lastMonthOfYear + ": " + monthlyRecord.toString());
+                        monthlyReports.put(lastMonthOfYear, monthlyRecord);
                         monthlyRecord = new JSONObject();
                         lastMonthOfYear = monthOfYear;
                     }
-                    marketplaceName = queryResult.getString("marketplace_name");
-                    countJsonKey = "total" + marketplaceName + "ListingCount";
-                    monthlyRecord.put(countJsonKey, queryResult.getInt("count"));
-                    sumJsonKey = "total" + marketplaceName + "ListingPrice";
-                    monthlyRecord.put(sumJsonKey, queryResult.getDouble("sum"));
-                    avgJsonKey = "average" + marketplaceName + "ListingPrice";
-                    monthlyRecord.put(avgJsonKey, queryResult.getDouble("avg"));
+                    addMonthlyRecordRowsByMarketplace(queryResult, monthlyRecord);
                 }
-                jsonReport.put(monthOfYear, monthlyRecord);
+                monthlyReports.put(monthOfYear, monthlyRecord);
             }
+            jsonReport.put("monthlyReports", monthlyReports);
         }
         catch (SQLException exception) {
             System.out.println(exception);
         }
+    }
+
+    private void addMonthlyRecordRowsByMarketplace(ResultSet queryResult, JSONObject monthlyRecord) throws SQLException {
+        String marketplaceName = queryResult.getString("marketplace_name");
+        String countJsonKey = "total" + marketplaceName + "ListingCount";
+        monthlyRecord.put(countJsonKey, queryResult.getInt("count"));
+        String sumJsonKey = "total" + marketplaceName + "ListingPrice";
+        monthlyRecord.put(sumJsonKey, queryResult.getDouble("sum"));
+        String avgJsonKey = "average" + marketplaceName + "ListingPrice";
+        monthlyRecord.put(avgJsonKey, queryResult.getDouble("avg"));
     }
 
 }
