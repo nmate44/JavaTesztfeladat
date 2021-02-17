@@ -1,7 +1,6 @@
 package com.nmatt44;
 
 import com.nmatt44.service.DataHandler;
-import com.nmatt44.service.QueryTool;
 import com.nmatt44.service.Reporter;
 
 import java.io.FileInputStream;
@@ -63,7 +62,12 @@ public class Main {
 
     private static void testReportQueries(Connection dbConnection) throws SQLException {
         Reporter reporter = new Reporter(dbConnection);
-        reporter.generateReport();
+        try{
+            reporter.generateReport();
+        } catch(IOException exception) {
+            System.out.println(exception);
+        }
+
     }
 
 }

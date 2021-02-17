@@ -43,6 +43,7 @@ public class Logger {
             printWriter.flush();
             lineCounter++;
         }
+        printWriter.close();
         System.out.println("CSV Logging done, logged errors: " + lineCounter);
     }
 

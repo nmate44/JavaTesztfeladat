@@ -2,6 +2,10 @@ package com.nmatt44.service;
 
 import kong.unirest.json.JSONObject;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +19,18 @@ public class Reporter {
         this.dbConnection = dbConnection;
     }
 
-    public void generateReport() {
+    public void generateReport() throws IOException {
         JSONObject jsonReport = new JSONObject();
         addSimpleData(jsonReport);
         addDataByMarketplace(jsonReport);
         addMonthlyData(jsonReport);
+        File reportOutputFile = new File(
+                "C:/Users/Lenovo/IdeaProjects/JavaTesztfeladat/src/main/report/report.json"
+        );
+        reportOutputFile.createNewFile();
+        PrintWriter printWriter = new PrintWriter(reportOutputFile);
+        printWriter.write(jsonReport.toString());
+        printWriter.close();
         System.out.println("Report: " + jsonReport.toString());
     }
 
