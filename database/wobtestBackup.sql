@@ -64,7 +64,7 @@ CREATE TABLE public.listing
     quantity integer NOT NULL,
     listing_status smallint NOT NULL,
     marketplace smallint NOT NULL,
-    upload_time date,
+    upload_time date NOT NULL,
     owner_email_address character varying(100) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT listing_pkey PRIMARY KEY (id),
     CONSTRAINT listing_inventory_item_location_id_fkey FOREIGN KEY (location_id)

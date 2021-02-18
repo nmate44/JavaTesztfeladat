@@ -237,7 +237,6 @@ public class QueryTool {
         statement.setInt(2, month);
         ResultSet queryResult = statement.executeQuery();
         if(queryResult.next()) {
-            System.out.println("Monthly Lister Found: " + queryResult.getString("owner_email_address"));
             return queryResult.getString("owner_email_address");
         }
         System.out.println("No monthly lister found...............");

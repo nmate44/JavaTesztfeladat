@@ -21,7 +21,11 @@ public class Reporter {
         JSONObject jsonReport = new JSONObject();
         addSimpleData(jsonReport);
         addDataByMarketplace(jsonReport);
-        addMonthlyData(jsonReport);
+        try {
+            addMonthlyData2(jsonReport);
+        } catch (SQLException exception) {
+            System.out.println(exception);
+        }
         File reportOutputFile = new File(
                 "C:/Users/Lenovo/IdeaProjects/JavaTesztfeladat/src/main/report/report.json"
         );
@@ -37,13 +41,6 @@ public class Reporter {
             System.out.println(exception);
         }
         System.out.println("Report: " + jsonReport.toString());
-    }
-
-    public void uploadReportToFTP(FileInputStream reportOutputFile) throws IOException {
-        FTPClient client = new FTPClient();
-        client.connect("127.0.0.1");
-        client.login("wobtest", "wobtest96");
-        client.storeFile("report.json", reportOutputFile);
     }
 
     private void addSimpleData(JSONObject jsonReport) {
@@ -74,33 +71,43 @@ public class Reporter {
         }
     }
 
-    private void addMonthlyData(JSONObject jsonReport) {
-        try {
+    private void addMonthlyData2(JSONObject jsonReport) throws SQLException {
             ResultSet queryResult = queryTool.selectMonthlyReportDataByMarketplace(dbConnection);
-            JSONObject monthlyReports = new JSONObject();
-            if(queryResult.next()) {
-                JSONObject monthlyRecord = new JSONObject();
-                String monthOfYear = queryResult.getInt("year") + "/"
+            JSONObject allMonthlyReports = new JSONObject();
+            monthlyDataGeneratorFromQuery(queryResult, allMonthlyReports);
+            jsonReport.put("monthlyReports", allMonthlyReports);
+    }
+
+    private void monthlyDataGeneratorFromQuery(ResultSet queryResult, JSONObject monthlyReports) throws SQLException {
+        if(queryResult.next()) {
+            JSONObject reportOfOneMonth = new JSONObject();
+            String monthFromRow = queryResult.getInt("year") + "/"
+                    + queryResult.getInt("month");
+            String bestListerEmail = queryTool.findMonthlyBestListerEmail(
+                    dbConnection,
+                    queryResult.getInt("year"),
+                    queryResult.getInt("month")
+                    );
+            addMonthlyRecordRowsByMarketplace(queryResult, reportOfOneMonth);
+            while(queryResult.next()) {
+                String nextMonthFromRow = queryResult.getInt("year") + "/"
                         + queryResult.getInt("month");
-                String lastMonthOfYear = monthOfYear;
-                addMonthlyRecordRowsByMarketplace(queryResult, monthlyRecord);
-                while(queryResult.next()) {
-                    monthOfYear = queryResult.getInt("year") + "/"
-                            + queryResult.getInt("month");
-                    if (!monthOfYear.equals(lastMonthOfYear)) {
-                        monthlyReports.put(lastMonthOfYear, monthlyRecord);
-                        monthlyRecord = new JSONObject();
-                        lastMonthOfYear = monthOfYear;
-                    }
-                    addMonthlyBestListerRow(queryResult, monthlyRecord);
-                    addMonthlyRecordRowsByMarketplace(queryResult, monthlyRecord);
+                if (!nextMonthFromRow.equals(monthFromRow)) {
+                    reportOfOneMonth.put("monthlyBestLister", bestListerEmail);
+                    monthlyReports.put(monthFromRow, reportOfOneMonth);
+                    reportOfOneMonth = new JSONObject();
+                    monthFromRow = nextMonthFromRow;
+                    bestListerEmail = queryTool.findMonthlyBestListerEmail(
+                            dbConnection,
+                            queryResult.getInt("year"),
+                            queryResult.getInt("month")
+                    );
+                    addMonthlyRecordRowsByMarketplace(queryResult, reportOfOneMonth);
                 }
-                monthlyReports.put(monthOfYear, monthlyRecord);
+                addMonthlyRecordRowsByMarketplace(queryResult, reportOfOneMonth);
             }
-            jsonReport.put("monthlyReports", monthlyReports);
-        }
-        catch (SQLException exception) {
-            System.out.println(exception);
+            reportOfOneMonth.put("monthlyBestLister", bestListerEmail);
+            monthlyReports.put(monthFromRow, reportOfOneMonth);
         }
     }
 
@@ -120,6 +127,13 @@ public class Reporter {
                 queryResult.getInt("year"),
                 queryResult.getInt("month"));
         monthlyRecord.put("monthlyBestLister", bestListerEmail);
+    }
+
+    public void uploadReportToFTP(FileInputStream reportOutputFile) throws IOException {
+        FTPClient client = new FTPClient();
+        client.connect("127.0.0.1");
+        client.login("wobtest", "wobtest96");
+        client.storeFile("report.json", reportOutputFile);
     }
 
 }

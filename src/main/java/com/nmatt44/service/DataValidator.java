@@ -37,7 +37,7 @@ public class DataValidator {
 
     private boolean validateOneListing(Listing listing, Connection dbConnection) {
         boolean isValid = true;
-        boolean[] checkResults = new boolean[10];
+        boolean[] checkResults = new boolean[11];
         checkResults[0] = checkIdValidity(listing.getId(), dbConnection);
         checkResults[1] = checkTitleValidity(listing.getTitle(), dbConnection);
         checkResults[2] = checkDescriptionValidity(listing.getDescription(), dbConnection);
@@ -48,6 +48,7 @@ public class DataValidator {
         checkResults[7] = checkListingStatusValidity(listing.getListingStatus(), dbConnection);
         checkResults[8] = checkMarketplaceValidity(listing.getMarketplace(), dbConnection);
         checkResults[9] = checkOwnerEmailValidity(listing.getOwnerEmailAddress(), dbConnection);
+        checkResults[10] = checkUploadTimeValidity(listing.getUploadTime(), dbConnection);
         for (boolean checkResult : checkResults) {
             if (!checkResult) {
                 isValid = false;
@@ -198,6 +199,19 @@ public class DataValidator {
         if(queryResult == null) {
             LogRecord actualRecord = logger.setActualRecord(actualListing,
                     "marketplace",
+                    dbConnection);
+            logger.logInvalidDataRecord(actualRecord);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkUploadTimeValidity(java.sql.Date uploadTime, Connection dbConnection) {
+        if(uploadTime == null) {
+            LogRecord actualRecord = logger.setActualRecord(
+                    actualListing,
+                    "upload_time",
                     dbConnection);
             logger.logInvalidDataRecord(actualRecord);
             return false;
