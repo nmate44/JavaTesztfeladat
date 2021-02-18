@@ -13,9 +13,6 @@ CREATE TABLE public.marketplace
 )
 
     TABLESPACE pg_default;
-
-ALTER TABLE public.marketplace
-    OWNER to admin;
 -- End of public.marketplace
 
 -- public.listing_status
@@ -27,9 +24,6 @@ CREATE TABLE public.listing_status
 )
 
     TABLESPACE pg_default;
-
-ALTER TABLE public.listing_status
-    OWNER to admin;
 -- End of public.listing_status
 
 -- public.location
@@ -47,9 +41,6 @@ CREATE TABLE public.location
 )
 
     TABLESPACE pg_default;
-
-ALTER TABLE public.location
-    OWNER to admin;
 -- End of public.location
 
 -- public.listing
@@ -87,7 +78,4 @@ CREATE TABLE public.listing
 )
 
     TABLESPACE pg_default;
-
-ALTER TABLE public.listing
-    OWNER to admin;
 -- End of public.listing
